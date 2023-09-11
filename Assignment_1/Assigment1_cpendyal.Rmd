@@ -1,0 +1,149 @@
+---
+title: "Assignment1_cpendyal"
+output: html_document
+date: "2023-09-08"
+---
+#Descrptive Statistics in R
+
+#Source : https://github.com/davidcaughlin/R-Tutorial-Data-Files
+
+#Step-1: To begin with, Set a working directory to read/write the files
+
+#Step-2: Read the Rawfile (EmployeeSurveyDatav1.csv) and View the first 5 rows of data
+
+```{r}
+#Read in the data
+#install.packages("readr")
+library(readr)
+
+#Set Working Directory
+setwd("C:\\Users\\user\\Desktop\\Masters\\Assignments\\FML Assignments\\FML Assignment 1")
+
+surveydata <- read.csv("EmployeeSurveyDatav1.csv")
+head(surveydata,5)
+```
+
+#From the above Survey data, "Gender" attributes to Categorical/Qualitative variable
+#From the above Survey data, "JobSat1" attributes to Quantitative variable
+
+#Categorical/Qualitative variables are also known as Nominal Variables. Because, Nominal Variables doesn't follow any Order.
+
+#Quantitative variables are known as Ordinal Variables, as they have set of order in the data and an analyst can arrange the data either ascending or descending as per business requirement.
+
+#Step-3: Measuring the Quantitative variables
+
+```{r}
+#install.packages("dplyr") #Installed dplyr package
+#install.packages("modeest")
+library(modeest)
+library(dplyr)
+
+#Count of Tenure_Yrs values
+TenureCount <- count(surveydata, Tenure_Yrs) 
+TenureCount
+
+#Applying Cross tab to Gender, Location
+xtabs(~Gender+Location, data=surveydata) 
+
+#Summary of the each attribute in surveydata
+summary(surveydata) 
+
+mfv(surveydata$JobSat1) #Most frequent value
+
+median(surveydata$JobSat1) #Median
+
+mode(surveydata$JobSat1) #Mode
+
+var(surveydata$JobSat1) #Variance
+
+sd(surveydata$JobSat1) #Standard Deviation
+
+length(surveydata$JobSat1) #Length
+
+IQR(surveydata$JobSat1) #Inter Quartile Ratio
+
+range(surveydata$JobSat1) #Range 
+
+sort(surveydata$Tenure_Yrs) #Sort to Ascending
+
+sort(surveydata$Tenure_Yrs, decreasing = TRUE) #Sort to Descending
+
+```
+
+#Step-4: Measuring the Nominal/Categorical variables.
+
+```{r}
+library("dplyr")
+GenderCount <- count(surveydata, Gender)
+(GenderCount)
+
+#Describe the proportions of the Location
+prop.table(table(surveydata$Location))*100
+```
+
+#Step-5: Transforming a Quantitative variable
+
+```{r}
+#Transformation
+#install.packages("ggplot2") #Installed ggplot2 package
+library(ggplot2)
+#install.packages("gridExtra")
+library(gridExtra)
+
+summary(surveydata$JobSat1)
+summary(log10(surveydata$JobSat1))
+summary(sqrt(surveydata$JobSat1))
+
+p1 <- ggplot(aes(x=JobSat1), data=surveydata) + geom_histogram()
+p2 <- ggplot(aes(x=log10(JobSat1)), data=surveydata) + geom_histogram()
+p3 <- ggplot(aes(x=sqrt(JobSat1)), data=surveydata) + geom_histogram()
+
+grid.arrange(p1, p2, p3, ncol=1)
+
+```
+
+#Step-6: Data Visualization using ggplot2
+
+```{r}
+#Step-6a: Visualized Quantitative variable (JobSat1)
+
+ggplot(surveydata, aes(x = JobSat1)) + geom_bar(stat = "count") + stat_count(geom = "text", aes(label = after_stat(count)), na.rm = TRUE)
+
+ggplot(data = surveydata, aes(x = Tenure_Yrs, y = JobSat1)) + geom_line()
+
+```
+
+#OBSERVATION FROM ABOVE LINE GRAPH:
+#The above bar graph illustrates the highest Job Satisfaction level lies at 3 across all the employees
+
+
+```{r}
+#Step-6b: Visualized Categorical Variable (Gender)
+#install.packages("plotrix")
+library(plotrix)
+pie(table(surveydata$Gender), labels = names(table(surveydata$Gender)), col = rainbow(3))
+
+```
+
+```{r}
+#Describe the proportions of the Gender (Male/Female)
+prop.table(table(surveydata$Gender))*100
+```
+
+#OBSERVATIONS FROM THE ABOVE PIECHART:
+#Majority of the proportion i.e., 54.4% for Man
+#Woman propotion is 43.5%
+#Nulls contributed to 1.9%
+
+
+#Step-6c: Plotting a Scatter Plot
+```{r}
+library(ggplot2) # loaded ggplot2 library to plot a scatterplot
+ggplot(surveydata, aes(x = Tenure_Yrs, y = JobSat1, color = Gender)) + geom_point()
+```
+
+#OBSERVATIONS FROM THE ABOVE SCATTERPLOT:
+#The Scatter plot illustrates the Job Satisfaction level across different tenure for both Man and Woman.
+
+#It clearly depicts that majority of the Man and Woman employees between tenure of 5-10 years are moderately satisfied (scale3 on Y-axis) and satisfied (scale4 on X-axis) with their job.
+
